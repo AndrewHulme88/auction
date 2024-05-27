@@ -39,8 +39,45 @@ class Auction {
   }
 }
 
-const auction1 = new Auction("Painting", 100);
-auction1.startAuction();
-auction1.placeBid("Alice", 150);
-auction1.placeBid("Bob", 200);
-auction1.endAuction();
+let auction;
+
+document.getElementById('create-auction-button').addEventListener('click', (e) => {
+    e.preventDefault();
+    const itemName = document.getElementById('item-name').value;
+    const startingPrice = parseFloat(document.getElementById('starting-price').value);
+    auction = new Auction(itemName, startingPrice);
+    document.getElementById('auction-controls').style.display = 'block';
+    document.getElementById('create-auction-form').style.display = 'none';
+    updateAuctionStatus();
+});
+
+document.getElementById('start-auction-button').addEventListener('click', () => {
+    auction.startAuction();
+    updateAuctionStatus();
+});
+
+document.getElementById('end-auction-button').addEventListener('click', () => {
+    auction.endAuction();
+    updateAuctionStatus();
+});
+
+document.getElementById('place-bid-button').addEventListener('click', (e) => {
+    e.preventDefault();
+    const bidderName = document.getElementById('bidder-name').value;
+    const bidAmount = parseFloat(document.getElementById('bid-amount').value);
+    auction.placeBid(bidderName, bidAmount);
+    updateAuctionStatus();
+});
+
+function updateAuctionStatus() {
+    const auctionStatusElement = document.getElementById('auction-status');
+    if (auction.isActive) {
+        auctionStatusElement.innerText = `Auction is active. Current price: ${auction.currentPrice}`;
+    } else {
+        auctionStatusElement.innerText = 'Auction is not active.';
+    }
+    if (auction.bids.length > 0) {
+        const winningBid = auction.bids[auction.bids.length - 1];
+        auctionStatusElement.innerText += ` Winner: ${winningBid.bidder}, Winning amount: ${winningBid.amount}`;
+    }
+}
